@@ -44,7 +44,7 @@ function raiseAlert {
         -p ${NAGIOS_PORT} -d "," -c ${NAGIOS_CFG}send_nsca.cfg > /dev/null;
         echo "Debug: Message Sent to Nagios: $1 $2 $3.";
     else
-        echo "Warning: Nagios Plugin not found.";
+        echo "Warning: NSCA (Nagios) Plugin not found.";
     fi
 }
 
