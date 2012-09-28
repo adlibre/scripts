@@ -60,7 +60,7 @@ function delBackup {
 
 function compressBackup {
     # Gzip
-    gzip -f -9 $BACKUPDIR/$DATE.*.dump;
+    gzip -f -9 --rsyncable $BACKUPDIR/$DATE.*.dump;
 }
 
 function linkLatest {
