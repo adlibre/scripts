@@ -2,6 +2,10 @@
 
 # Adlibre 2012-08-30 Backup MySQL databases and send passive check result to Nagios/Icinga (NSCA)
 
+# Install:
+# yum -y install nsca-client
+
+
 ## Config
 PASS=`cat /etc/mysql_root_password`
 BACKUPDIR='/srv/backup'

@@ -6,6 +6,11 @@
 #
 # Adlibre Pty Ltd 2012
 
+# Install:
+# yum -y install nsca-client
+
+
+
 ## Config
 BACKUP_PATH='/etc /root /srv/www'
 
