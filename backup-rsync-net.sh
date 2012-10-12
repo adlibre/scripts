@@ -20,23 +20,22 @@ NAGIOS_CFG=/etc/nagios/
 NAGIOS_SERVER=monitor.example.com
 NAGIOS_PORT=5667
 NAGIOS_SERVICE_NAME='Rsync.net Backup Daily'
-LOCK='/tmp/rsync-net-in-progress.lock'
+LOCKFILE="/var/run/`basename $0 | sed s/\.sh// `.pid"
 ## end config
 
 PATH="/sbin:/bin:/usr/sbin:/usr/bin:$PATH";
 DAY=`date +'%F %T'`
 
 # Sanity Checks
-
 # Check to see if we are already running / locked, limit to one instance
-if [ -f ${LOCK} ]; then
-    echo "Already running, or locked"
-    exit $99
+if [ -f ${LOCKFILE} ] ; then
+    echo "Error: Already running, or locked. Lockfile exists [`ls -ld $LOCKFILE`]."
+    exit 99
+else
+    echo $$ > ${LOCKFILE}
+    # Upon exit, remove lockfile.
+    trap "{ rm -f ${LOCKFILE}; }" EXIT
 fi
-
-# Upon exit, remove lockfile.
-trap "{ rm -f ${LOCK}; }" EXIT
-touch ${LOCK};
 
 #
 # Send passive alert information to Nagios / Icinga
