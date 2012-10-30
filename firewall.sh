@@ -30,8 +30,8 @@ iptables -A OUTPUT -p tcp -m state --state NEW -m tcp --dport ${SSH_PORT} -j ACC
 iptables -A OUTPUT -p tcp -m state --state NEW -m tcp --dport 25 -j ACCEPT
 iptables -A OUTPUT -p tcp -m state --state NEW -m tcp --dport 53 -j ACCEPT
 iptables -A OUTPUT -p udp -m state --state NEW -m udp --dport 53 -j ACCEPT
-iptables -A OUTPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
-iptables -A OUTPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
+iptables -A OUTPUT -p tcp -m state --state NEW -m tcp -m owner --uid-owner root --dport 80 -j ACCEPT
+iptables -A OUTPUT -p tcp -m state --state NEW -m tcp -m owner --uid-owner root --dport 443 -j ACCEPT
 iptables -A OUTPUT -p tcp -m state --state NEW -m tcp --destination ${MONITOR_HOST} --dport 5667 -j ACCEPT # NSCA
 iptables -A OUTPUT -j REJECT --reject-with icmp-host-prohibited
 
