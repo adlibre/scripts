@@ -15,10 +15,7 @@
 BACKUP_PATH='/etc /root /srv/www'
 
 ## Constants
-NAGIOS_DIR=/usr/sbin/
-NAGIOS_CFG=/etc/nagios/
-NAGIOS_SERVER=monitor.example.com
-NAGIOS_PORT=5667
+NAGIOS_SERVER='monitor.example.com'
 NAGIOS_SERVICE_NAME='Rsync.net Backup Daily'
 LOCKFILE="/var/run/`basename $0 | sed s/\.sh// `.pid"
 ## end config
@@ -45,6 +42,10 @@ function raiseAlert {
     # $2 - Return code 0=success, 1=warning, 2=critical
     # $3 - Message you want to send
     # <host_name>,<svc_description>,<return_code>,<plugin_output>
+    # defaults that can be overridden
+    NAGIOS_DIR=${NAGIOS_DIR-/usr/sbin/}
+    NAGIOS_CFG=${NAGIOS_CFG-/etc/nagios/}
+    NAGIOS_PORT=${NAGIOS_PORT-5667}
     if [ -f ${NAGIOS_DIR}send_nsca ]; then
         echo "`hostname`,$1,$2,$3" | ${NAGIOS_DIR}send_nsca -H ${NAGIOS_SERVER} \
         -p ${NAGIOS_PORT} -d "," -c ${NAGIOS_CFG}send_nsca.cfg > /dev/null;

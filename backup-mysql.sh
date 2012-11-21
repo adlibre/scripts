@@ -8,12 +8,11 @@
 
 ## Config
 PASS=`cat /etc/mysql_root_password`
+USER='root'
+HOST='localhost'
 BACKUPDIR='/srv/backup'
 KEEP='30'
-NAGIOS_DIR=/usr/sbin/
-NAGIOS_CFG=/etc/nagios/
 NAGIOS_SERVER=monitor.example.com
-NAGIOS_PORT=5667
 NAGIOS_SERVICE_NAME='MySQL Dump Daily'
 LOCKFILE="/var/run/`basename $0 | sed s/\.sh// `.pid"
 ##
@@ -43,10 +42,14 @@ function raiseAlert {
     # $2 - Return code 0=success, 1=warning, 2=critical
     # $3 - Message you want to send
     # <host_name>,<svc_description>,<return_code>,<plugin_output>
+    # defaults that can be overridden
+    NAGIOS_DIR=${NAGIOS_DIR-/usr/sbin/}
+    NAGIOS_CFG=${NAGIOS_CFG-/etc/nagios/}
+    NAGIOS_PORT=${NAGIOS_PORT-5667}
     if [ -f ${NAGIOS_DIR}send_nsca ]; then
         echo "`hostname`,$1,$2,$3" | ${NAGIOS_DIR}send_nsca -H ${NAGIOS_SERVER} \
         -p ${NAGIOS_PORT} -d "," -c ${NAGIOS_CFG}send_nsca.cfg > /dev/null;
-        echo "Debug: Message Sent to Nagios: $1 $2 $3.";
+        echo "Debug: Message Sent to Nagios ($NAGIOS_SERVER): $1 $2 $3.";
     else
         echo "Warning: NSCA (Nagios) Plugin not found.";
     fi
@@ -54,7 +57,7 @@ function raiseAlert {
 
 function doBackup {    
     # do the backup
-    mysqldump --all-databases --opt --password=${PASS} --user=root > ${BACKUPDIR}/${DATE}.mysql.dump ;
+    mysqldump --all-databases --opt --password=${PASS} --user=${USER-root} -h {HOST-localhost} > ${BACKUPDIR}/${DATE}.mysql.dump ;
 }
 
 function delBackup {
