@@ -57,7 +57,7 @@ function raiseAlert {
 
 function doBackup {    
     # do the backup
-    mysqldump --all-databases --opt --password=${PASS} --user=${USER-root} -h ${HOST-localhost} > ${BACKUPDIR}/${DATE}.mysql.dump ;
+    mysqldump --single-transaction --all-databases --flush-logs --opt --password=${PASS} --user=${USER-root} -h ${HOST-localhost} > ${BACKUPDIR}/${DATE}.mysql.dump ;
 }
 
 function delBackup {
