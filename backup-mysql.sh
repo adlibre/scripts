@@ -62,7 +62,7 @@ function doBackup {
 
 function delBackup {
     # delete the old backups
-    find $BACKUPDIR -name "*.dump.gz" -mtime $KEEP -exec rm -f {} \;
+    find $BACKUPDIR -name "*.dump.gz" -mtime +$KEEP -exec rm -f {} \;
 }
 
 function compressBackup {
