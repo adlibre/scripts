@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Adlibre 2012-08-30 Backup MySQL databases and send passive check result to Nagios/Icinga (NSCA)
+# Adlibre 2012-13: Backup MySQL databases and send passive check result to Nagios/Icinga (NSCA)
 
 # Install:
 # yum -y install nsca-client
@@ -57,7 +57,7 @@ function raiseAlert {
 
 function doBackup {    
     # do the backup
-    mysqldump --single-transaction --all-databases --flush-logs --opt --password=${PASS} --user=${USER-root} -h ${HOST-localhost} > ${BACKUPDIR}/${DATE}.mysql.dump ;
+    mysqldump --single-transaction --all-databases --flush-logs --opt --ignore-table=mysql.event --password=${PASS} --user=${USER-root} -h ${HOST-localhost} > ${BACKUPDIR}/${DATE}.mysql.dump ;
 }
 
 function delBackup {
