@@ -57,7 +57,7 @@ function raiseAlert {
 
 # Command
 function uploadBackup {
-    rsync -aHz --numeric-ids --delete ${BACKUP_PATH} rsync.net:`hostname -s`/
+    rsync -aHz --numeric-ids --chmod=u+r --delete ${BACKUP_PATH} rsync.net:`hostname -s`/
 }
 
 # upload backup
