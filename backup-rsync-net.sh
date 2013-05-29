@@ -3,6 +3,7 @@
 # Rsync.net backup script - Backup to rsync target and send passive check result to Nagios/Icinga (NSCA)
 #
 # NB: No backup rotation is done. Assumes snapshots / rotation is done on the target.
+#     Rsync.net do not maintain full / correct file permissions. 
 #
 # Adlibre Pty Ltd 2012
 
