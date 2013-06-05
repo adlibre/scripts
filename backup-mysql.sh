@@ -34,6 +34,11 @@ fi
 DATE=`date +%F`
 cd $BACKUPDIR;
 
+# Check for mysql options file
+if [ ! -e "${HOME}/.my.cnf" ] || [ ! "`mysql -s -e \"SELECT 1\" >/dev/null 2>&1; echo $?`" -eq 0 ]; then
+  MYAUTH="--password=${PASS} --user=${USER-root} -h ${HOST-localhost}"
+fi
+
 #
 # Send passive alert information to Nagios / Icinga
 #
@@ -57,7 +62,7 @@ function raiseAlert {
 
 function doBackup {    
     # do the backup
-    mysqldump --single-transaction --all-databases --flush-logs --opt --ignore-table=mysql.event --password=${PASS} --user=${USER-root} -h ${HOST-localhost} > ${BACKUPDIR}/${DATE}.mysql.dump ;
+    mysqldump --single-transaction --all-databases --flush-logs --opt --ignore-table=mysql.event ${MYAUTH} > ${BACKUPDIR}/${DATE}.mysql.dump ;
 }
 
 function delBackup {
