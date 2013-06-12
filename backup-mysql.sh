@@ -5,15 +5,20 @@
 # Install:
 # yum -y install nsca-client
 
+## Source config file
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ -e "${DIR}/config" ]; then
+  . ${DIR}/config
+fi
 
 ## Config
 PASS=`cat /etc/mysql_root_password`
-USER='root'
-HOST='localhost'
-BACKUPDIR='/srv/backup'
-KEEP='30'
-NAGIOS_SERVER=monitor.example.com
-NAGIOS_SERVICE_NAME='MySQL Dump Daily'
+USER=${USER-root}
+HOST=${HOST-localhost}
+BACKUPDIR=${BACKUPDIR-/srv/backup}
+KEEP=${KEEP-30}
+NAGIOS_SERVER=${NAGIOS_SERVER-monitor.example.com}
+NAGIOS_SERVICE_NAME=${NAGIOS_SERVICE_NAME-MySQL Dump Daily}
 LOCKFILE="/var/run/`basename $0 | sed s/\.sh// `.pid"
 ##
 
