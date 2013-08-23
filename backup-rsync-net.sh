@@ -14,6 +14,12 @@
 
 ## Config
 BACKUP_PATH='/etc /root /srv/www'
+BACKUP_PATH='/root/backup_test' # THIS ONE IS FOR TESTING
+BACKUP_EXCLUDE_PATH='/dev /proc /sys /tmp /var/tmp /var/run /selinux /cgroups lost+found'
+REMOTE="rsync.net"
+REMOTE_PATH="`hostname -s`/"
+REMOTE="localhost" # THIS ONE IS FOR TESTING
+BACKUPS_KEEP='7' # This will keep the last 7 backups
 
 ## Constants
 NAGIOS_SERVER='monitor.example.com'
@@ -23,6 +29,12 @@ LOCKFILE="/var/run/`basename $0 | sed s/\.sh// `.pid"
 
 PATH="/sbin:/bin:/usr/sbin:/usr/bin:$PATH";
 DAY=`date +'%F %T'`
+BACKUP_TIME=`date +%Y%m%d%H%M%S`
+
+# expand excludes
+for e in $BACKUP_EXCLUDE_PATH; do
+    RSYNC_EXCLUDES="$RSYNC_EXCLUDES --exclude=${e}"
+done
 
 # Sanity Checks
 # Check to see if we are already running / locked, limit to one instance
@@ -53,20 +65,33 @@ function raiseAlert {
         echo "Debug: Message Sent to Nagios ($NAGIOS_SERVER): $1 $2 $3.";
     else
         echo "Warning: NSCA (Nagios) Plugin not found.";
+        echo "Message would have been sent to Nagios ($NAGIOS_SERVER): \"$1\" $2 \"$3\"";
     fi
 }
 
 # Command
 function uploadBackup {
-    rsync -aHz --numeric-ids --chmod=u+r --delete ${BACKUP_PATH} rsync.net:`hostname -s`/
+    existing=(`ssh ${REMOTE} "ls ${REMOTE_PATH}" | egrep '[0-9]{14}' | sort -n`)
+    while [ "${#existing[@]}" -ge "${BACKUPS_KEEP}" ] && [ "${#existing[@]}" -ne "1" ]; do
+        ssh ${REMOTE} "rm -rf ${REMOTE_PATH}/${existing[0]}"
+        existing=(`ssh ${REMOTE} "ls ${REMOTE_PATH}" | egrep '[0-9]{14}' | sort -n`)
+    done
+    if [ -n "${existing}" ]; then
+        latest="${existing[$((${#existing[@]}-1))]}"
+        ssh ${REMOTE} "cp -al ${REMOTE_PATH}/${latest} ${REMOTE_PATH}/${BACKUP_TIME}"
+    fi
+    rsync -aHz --numeric-ids --chmod=u+rw --delete ${RSYNC_EXCLUDES} ${BACKUP_PATH} ${REMOTE}:${REMOTE_PATH}/${BACKUP_TIME}/
 }
 
 # upload backup
+timestart=`date +%s`
 CMD=`uploadBackup`;
-if [ $? -ne 0 ] ;
+CMD_RET=$?
+timetotal=$((`date +%s`-${timestart}))
+if [ "${CMD_RET}" -ne 0 ];
 then
-    raiseAlert "$NAGIOS_SERVICE_NAME" 2 "Backup Failed during uploadBackup. $CMD"
+    raiseAlert "$NAGIOS_SERVICE_NAME" 2 "Backup Failed during uploadBackup. ${CMD}|in ${timetotal} sec"
 else
-    raiseAlert "$NAGIOS_SERVICE_NAME" 0 "Backup Completed OK at $DAY"
+    raiseAlert "$NAGIOS_SERVICE_NAME" 0 "Backup Completed OK at ${DAY}|in ${timetotal} sec"
     exit 0
 fi
