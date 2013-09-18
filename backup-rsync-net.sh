@@ -9,8 +9,8 @@
 
 # Install:
 # yum -y install nsca-client
-
-
+#
+# Usage: backup-rsync-net.sh <test>
 
 ## Config
 BACKUP_PATH='/etc /root /srv/www'
@@ -81,15 +81,21 @@ function uploadBackup {
     rsync -aHz --numeric-ids --chmod=u+rw --delete ${RSYNC_EXCLUDES} ${BACKUP_PATH} ${REMOTE}:${REMOTE_PATH}/${BACKUP_TIME}/
 }
 
-# upload backup
-timestart=`date +%s`
-CMD=`uploadBackup`;
-CMD_RET=$?
-timetotal=$((`date +%s`-${timestart}))
-if [ "${CMD_RET}" -ne 0 ];
-then
-    raiseAlert "$NAGIOS_SERVICE_NAME" 2 "Backup Failed during uploadBackup. ${CMD}|in ${timetotal} sec"
+if [ ! ${1} ]; then
+    # upload backup
+    timestart=`date +%s`
+    CMD=`uploadBackup`;
+    CMD_RET=$?
+    timetotal=$((`date +%s`-${timestart}))
+    if [ "${CMD_RET}" -ne 0 ];
+    then
+        raiseAlert "$NAGIOS_SERVICE_NAME" 2 "Backup Failed during uploadBackup. ${CMD}|in ${timetotal} sec"
+    else
+        raiseAlert "$NAGIOS_SERVICE_NAME" 0 "Backup Completed OK at ${DAY}|in ${timetotal} sec"
+        exit 0
+    fi
 else
-    raiseAlert "$NAGIOS_SERVICE_NAME" 0 "Backup Completed OK at ${DAY}|in ${timetotal} sec"
-    exit 0
+    # Test
+    echo "Test Mode"
+    raiseAlert "$NAGIOS_SERVICE_NAME" 0 "Backup Tested at ${DAY}|in ${timetotal} sec"
 fi
