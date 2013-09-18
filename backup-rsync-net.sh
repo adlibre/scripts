@@ -14,11 +14,9 @@
 
 ## Config
 BACKUP_PATH='/etc /root /srv/www'
-BACKUP_PATH='/root/backup_test' # THIS ONE IS FOR TESTING
 BACKUP_EXCLUDE_PATH='/dev /proc /sys /tmp /var/tmp /var/run /selinux /cgroups lost+found'
 REMOTE="rsync.net"
 REMOTE_PATH="`hostname -s`/"
-REMOTE="localhost" # THIS ONE IS FOR TESTING
 BACKUPS_KEEP='7' # This will keep the last 7 backups
 
 ## Constants
