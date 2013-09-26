@@ -67,7 +67,7 @@ function raiseAlert {
 
 function doBackup {    
     # do the backup
-    mysqldump --single-transaction --all-databases --flush-logs --opt --ignore-table=mysql.event ${MYAUTH} > ${BACKUPDIR}/${DATE}.mysql.dump ;
+    mysqldump --single-transaction --quick --all-databases --flush-logs --opt --ignore-table=mysql.event ${MYAUTH} > ${BACKUPDIR}/${DATE}.mysql.dump ;
 }
 
 function delBackup {
