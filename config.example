@@ -1,0 +1,20 @@
+# MySQL Defaults
+PASS=`cat /etc/mysql_root_password`
+USER=${USER-root}
+HOST=${HOST-localhost}
+BACKUPDIR=${BACKUPDIR-/srv/backup}
+KEEP=${KEEP-30}
+
+# Rsync Backup Defaults
+BACKUP_PATH=${BACKUP_PATH-'/etc /root /srv/www'}
+BACKUP_EXCLUDE_PATH=${BACKUP_EXCLUDE_PATH-'/dev /proc /sys /tmp /var/tmp /var/run /selinux /cgroups lost+found'}
+REMOTE=${REMOTE-'rsync.net'}
+REMOTE_PATH=${REMOTE_PATH-`hostname -s`/}
+BACKUPS_KEEP=${BACKUPS_KEEP-'7'} # This will keep the last 7 backups
+
+# Monitoring Defaults
+NAGIOS_SERVER=${NAGIOS_SERVER-monitor.example.com}
+NAGIOS_SERVICE_NAME=${NAGIOS_SERVICE_NAME-MySQL Dump Daily}
+
+# Firewall Defaults
+FW_SSH_PORT=22

@@ -11,8 +11,8 @@ if [ -e "${DIR}/config" ]; then
   . ${DIR}/config
 fi
 
-## Config
-PASS=`cat /etc/mysql_root_password`
+## Config Defaults
+PASS=${PASS-`cat /etc/mysql_root_password`}
 USER=${USER-root}
 HOST=${HOST-localhost}
 BACKUPDIR=${BACKUPDIR-/srv/backup}

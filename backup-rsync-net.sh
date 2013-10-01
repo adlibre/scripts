@@ -12,19 +12,23 @@
 #
 # Usage: backup-rsync-net.sh <test>
 
-## Config
-BACKUP_PATH='/etc /root /srv/www'
-BACKUP_EXCLUDE_PATH='/dev /proc /sys /tmp /var/tmp /var/run /selinux /cgroups lost+found'
-REMOTE="rsync.net"
-REMOTE_PATH="`hostname -s`/"
-BACKUPS_KEEP='7' # This will keep the last 7 backups
+## Source config file
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ -e "${DIR}/config" ]; then
+  . ${DIR}/config
+fi
+
+## Config Defaults
+BACKUP_PATH=${BACKUP_PATH-'/etc /root /srv/www'}
+BACKUP_EXCLUDE_PATH=${BACKUP_EXCLUDE_PATH-'/dev /proc /sys /tmp /var/tmp /var/run /selinux /cgroups lost+found'}
+REMOTE=${REMOTE-'rsync.net'}
+REMOTE_PATH=${REMOTE_PATH-`hostname -s`/}
+BACKUPS_KEEP=${BACKUPS_KEEP-'7'} # This will keep the last 7 backups
+NAGIOS_SERVER=${NAGIOS_SERVER-monitor.example.com}
+NAGIOS_SERVICE_NAME=${NAGIOS_SERVICE_NAME-'Rsync.net Backup Daily'}
 
 ## Constants
-NAGIOS_SERVER='monitor.example.com'
-NAGIOS_SERVICE_NAME='Rsync.net Backup Daily'
 LOCKFILE="/var/run/`basename $0 | sed s/\.sh// `.pid"
-## end config
-
 PATH="/sbin:/bin:/usr/sbin:/usr/bin:$PATH";
 DAY=`date +'%F %T'`
 BACKUP_TIME=`date +%Y%m%d%H%M%S`
