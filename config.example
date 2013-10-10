@@ -14,7 +14,6 @@ BACKUPS_KEEP=${BACKUPS_KEEP-'7'} # This will keep the last 7 backups
 
 # Monitoring Defaults
 NAGIOS_SERVER=${NAGIOS_SERVER-monitor.example.com}
-NAGIOS_SERVICE_NAME=${NAGIOS_SERVICE_NAME-MySQL Dump Daily}
 
 # Firewall Defaults
 FW_SSH_PORT=22
