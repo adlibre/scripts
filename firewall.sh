@@ -37,6 +37,7 @@ iptables -A OUTPUT -p tcp -m state --state NEW -m tcp --dport ${FW_SSH_PORT} -j 
 iptables -A OUTPUT -p tcp -m state --state NEW -m tcp --dport 25 -j ACCEPT
 iptables -A OUTPUT -p tcp -m state --state NEW -m tcp --dport 53 -j ACCEPT
 iptables -A OUTPUT -p udp -m state --state NEW -m udp --dport 53 -j ACCEPT
+iptables -A OUTPUT -p udp -m state --state NEW -m udp -m owner --uid-owner root --dport 123 -j ACCEPT
 iptables -A OUTPUT -p tcp -m state --state NEW -m tcp -m owner --uid-owner root --dport 80 -j ACCEPT
 iptables -A OUTPUT -p tcp -m state --state NEW -m tcp -m owner --uid-owner root --dport 443 -j ACCEPT
 iptables -A OUTPUT -p tcp -m state --state NEW -m tcp --destination ${NAGIOS_SERVER} --dport 5667 -j ACCEPT # NSCA
