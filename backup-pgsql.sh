@@ -62,7 +62,8 @@ function raiseAlert {
 
 function doBackup {    
     # do the backup
-    pg_dumpall > ${BACKUPDIR}/${DATE}.pgsql.dump ; 
+    cd / && \
+    su postgres -c pg_dumpall > ${BACKUPDIR}/${DATE}.pgsql.dump ; 
 }
 
 function delBackup {
@@ -77,7 +78,7 @@ function compressBackup {
 
 function linkLatest {
     # Latest link
-    ln -f ${DATE}.mysql.dump.gz ${BACKUPDIR}/latest.pgsql.dump.gz
+    ln -f ${DATE}.pgsql.dump.gz ${BACKUPDIR}/latest.pgsql.dump.gz
 }
 
 CMD=`doBackup`;
