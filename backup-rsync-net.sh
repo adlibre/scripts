@@ -19,7 +19,7 @@ if [ -e "${DIR}/config" ]; then
 fi
 
 ## Config Defaults
-BACKUP_PATH=${BACKUP_PATH-'/etc /root /srv/www'}
+BACKUP_PATH=${BACKUP_PATH-'/etc /root /srv/www /home'}
 BACKUP_EXCLUDE_PATH=${BACKUP_EXCLUDE_PATH-'/dev /proc /sys /tmp /var/tmp /var/run /selinux /cgroups lost+found'}
 REMOTE=${REMOTE-'rsync.net'}
 REMOTE_PATH=${REMOTE_PATH-`hostname -s`/}
@@ -73,7 +73,9 @@ function raiseAlert {
 
 # Command
 function uploadBackup {
-    existing=(`ssh ${REMOTE} "ls ${REMOTE_PATH}" | egrep '[0-9]{14}' | sort -n`)
+    existing_raw="`ssh ${REMOTE} "ls ${REMOTE_PATH}"`"
+    [ "$?" -ne 0 ] && ssh ${REMOTE} "mkdir -p ${REMOTE_PATH}"
+    existing=(`echo "${existing_raw}" | egrep '[0-9]{14}' | sort -n`)
     while [ "${#existing[@]}" -ge "${BACKUPS_KEEP}" ] && [ "${#existing[@]}" -ne "1" ]; do
         ssh ${REMOTE} "rm -rf ${REMOTE_PATH}/${existing[0]}"
         existing=(`ssh ${REMOTE} "ls ${REMOTE_PATH}" | egrep '[0-9]{14}' | sort -n`)
@@ -93,13 +95,13 @@ if [ ! ${1} ]; then
     timetotal=$((`date +%s`-${timestart}))
     if [ "${CMD_RET}" -ne 0 ];
     then
-        raiseAlert "$NAGIOS_SERVICE_NAME" 2 "Backup Failed during uploadBackup. ${CMD}|in ${timetotal} sec"
+        raiseAlert "$NAGIOS_SERVICE_NAME" 2 "Backup Failed during uploadBackup. ${CMD} in ${timetotal} sec|totaltime=${timetotal}"
     else
-        raiseAlert "$NAGIOS_SERVICE_NAME" 0 "Backup Completed OK at ${DAY}|in ${timetotal} sec"
+        raiseAlert "$NAGIOS_SERVICE_NAME" 0 "Backup Completed OK at ${DAY} in ${timetotal} sec|totaltime=${timetotal}"
         exit 0
     fi
 else
     # Test
     echo "Test Mode"
-    raiseAlert "$NAGIOS_SERVICE_NAME" 0 "Backup Tested at ${DAY}|in ${timetotal} sec"
+    raiseAlert "$NAGIOS_SERVICE_NAME" 0 "Backup Tested at ${DAY} in ${timetotal} sec |totaltime=${timetotal}"
 fi
