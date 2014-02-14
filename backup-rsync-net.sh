@@ -26,6 +26,7 @@ REMOTE_PATH=${REMOTE_PATH-`hostname -s`/}
 BACKUPS_KEEP=${BACKUPS_KEEP-'7'} # This will keep the last 7 backups
 NAGIOS_SERVER=${NAGIOS_SERVER-monitor.example.com}
 NAGIOS_SERVICE_NAME=${NAGIOS_SERVICE_NAME-'Rsync.net Backup Daily'}
+NAGIOS_HOSTNAME=${NAGIOS_HOSTNAME-`hostname -f`}
 
 ## Constants
 LOCKFILE="/var/run/`basename $0 | sed s/\.sh// `.pid"
@@ -62,7 +63,7 @@ function raiseAlert {
     NAGIOS_CFG=${NAGIOS_CFG-/etc/nagios/}
     NAGIOS_PORT=${NAGIOS_PORT-5667}
     if [ -f ${NAGIOS_DIR}send_nsca ]; then
-        echo "`hostname`,$1,$2,$3" | ${NAGIOS_DIR}send_nsca -H ${NAGIOS_SERVER} \
+        echo "${NAGIOS_HOSTNAME},$1,$2,$3" | ${NAGIOS_DIR}send_nsca -H ${NAGIOS_SERVER} \
         -p ${NAGIOS_PORT} -d "," -c ${NAGIOS_CFG}send_nsca.cfg > /dev/null;
         # echo "Debug: Message Sent to Nagios ($NAGIOS_SERVER): $1 $2 $3.";
     else
